@@ -75,6 +75,28 @@ CUDA_VISIBLE_DEVICES=0,1,2,3 python tools/train.py --dataset coco -j 20 --arch S
 sh scripts/test_recall_coco.sh
 ```
 
+#### Naive Cascade Instance Segmentation (YOLOv3+DeepMask=10FPS~28FPS)
+
+<div align="center">
+  <img src="data/00129.jpg" width="250px" />
+  <img src="data/00149.jpg" width="250px" />
+  <img src="data/00182.jpg" width="250px" />
+  <img src="data/00311.jpg" width="250px" />
+  <img src="data/00358.jpg" width="250px" />
+  <img src="data/00507.jpg" width="250px" />
+</div>
+
+```bash
+git clone https://github.com/pjreddie/darknet.git
+cd darknet
+## Compile with CUDA  https://pjreddie.com/darknet/install/
+cd $DEEPMASK
+wget https://pjreddie.com/media/files/yolov3.weights
+wget https://pjreddie.com/media/files/yolov3-tiny.weights
+python tools/yolo_deepmask.py
+```
+
+
 ## Citations
 Please consider citing this project in your publications if it helps your research. The following is a BibTeX reference. The BibTeX entry requires the `url` LaTeX package.
 ```
