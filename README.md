@@ -75,7 +75,7 @@ CUDA_VISIBLE_DEVICES=0,1,2,3 python tools/train.py --dataset coco -j 20 --arch S
 sh scripts/test_recall_coco.sh
 ```
 
-#### Naive Cascade Instance Segmentation (YOLOv3+DeepMask=10FPS~28FPS)
+## Naive Cascade Instance Segmentation (YOLOv3+DeepMask=10FPS~28FPS)
 
 <div align="center">
   <img src="data/00129.jpg" width="250px" />
@@ -94,6 +94,22 @@ cd $DEEPMASK
 wget https://pjreddie.com/media/files/yolov3.weights
 wget https://pjreddie.com/media/files/yolov3-tiny.weights
 python tools/yolo_deepmask.py
+```
+
+## Naive Cascade Video Object Segmentation (DaSiamRPN+DeepMask=60FPS)
+
+<div align="center">
+  <img src="data/vos.gif" width="400px" />
+</div>
+
+```bash
+git clone https://github.com/foolwood/DaSiamRPN.git
+mkdir tracker && mv DaSiamRPN/code/* ./tracker/ && rm -rf ./DaSiamRPN
+touch tracker/__init__.py
+sed -i 's/utils/.utils/g' tracker/run_SiamRPN.py
+cd $DEEPMASK
+wget www.robots.ox.ac.uk/~qwang/SiamRPNVOT.model
+python tools/dasiamrpn_deepmask.py
 ```
 
 

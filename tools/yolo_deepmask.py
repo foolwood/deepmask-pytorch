@@ -162,6 +162,7 @@ def crop_chw(image, bbox, out_sz, padding=0):
                         [0, b, d]]).astype(np.float)
     crop = cv2.warpAffine(image, mapping, (out_sz, out_sz),
                           borderMode=cv2.BORDER_CONSTANT,
+                          borderValue=padding)
     return np.transpose(crop, (2, 0, 1))
 
 
