@@ -1,6 +1,6 @@
 # deepmask-pytorch
 
-This repository contains a PyTorch re-implementation for the DeepMask and SharpMask object proposal algorithms.
+This repository contains a PyTorch re-implementation for the [DeepMask](https://arxiv.org/abs/1506.06204) and [SharpMask](https://arxiv.org/abs/1603.08695) object proposal algorithms.
 
 <div align="center">
   <img src="data/heatmap.png" width="700px" />
@@ -13,13 +13,14 @@ This repository contains a PyTorch re-implementation for the DeepMask and SharpM
 * [PyTorch 0.4.1](https://pytorch.org/)
 
 ## Quick Start
-To run pretrained DeepMask models to generate object proposals, follow these steps:
+To run pretrained `DeepMask` models to generate object proposals, follow these steps:
 
 1. Clone this repository into $DEEPMASK:
 
    ```bash
-   DEEPMASK=/desired/absolute/path/to/deepmask/ # set absolute path as desired
-   git clone https://github.com/foolwood/deepmask-pytorch.git $DEEPMASK
+   git clone https://github.com/foolwood/deepmask-pytorch.git
+   cd deepmask-pytorch
+   DEEPMASK=$PWD
    export PYTHONPATH=$DEEPMASK:$PYTHONPATH
    ```
 
@@ -35,18 +36,19 @@ To run pretrained DeepMask models to generate object proposals, follow these ste
    ```bash
    # apply to a default sample image (data/testImage.jpg)
    cd $DEEPMASK
-   python tools/computeProposals.py --arch DeepMask --resume $DEEPMASK/pretrained/deepmask/DeepMask.pth.tar --img /path/to/image.jpg
+   python tools/computeProposals.py --arch DeepMask --resume $DEEPMASK/pretrained/deepmask/DeepMask.pth.tar --img ./data/test.jpg
    ```
 
 ## Training Your Own Model
-To train your own DeepMask models, follow these steps:
+To train your own `DeepMask` models, follow these steps:
 
 ### Preparation
 1. If you have not done so already, clone this repository into $DEEPMASK:
 
    ```bash
-   DEEPMASK=/desired/absolute/path/to/deepmask/ # set absolute path as desired
-   git clone https://github.com/foolwood/deepmask-pytorch.git $DEEPMASK
+   git clone https://github.com/foolwood/deepmask-pytorch.git
+   cd deepmask-pytorch
+   DEEPMASK=$PWD
    export PYTHONPATH=$DEEPMASK:$PYTHONPATH
    ```
 
@@ -59,20 +61,34 @@ To train your own DeepMask models, follow these steps:
    wget http://images.cocodataset.org/annotations/annotations_trainval2017.zip
 
    unzip ./train2017.zip && unzip ./val2017.zip && unzip ./annotations_trainval2017.zip
-   cd ../../loader/pycocotools && make && cd ../..
+   cd $DEEPMASK/loader/pycocotools && make
    ```
 
 ### Training
 To train DeepMask, launch the `train.py` script. It contains several options, to list them, simply use the `--help` flag.
 
 ```bash
+cd $DEEPMASK
 CUDA_VISIBLE_DEVICES=0,1,2,3 python tools/train.py --dataset coco -j 20 --freeze_bn
 CUDA_VISIBLE_DEVICES=0,1,2,3 python tools/train.py --dataset coco -j 20 --arch SharpMask --freeze_bn
 ```
 
 #### Testing
+Test on COCO valiadation set.
 ```bash
 sh scripts/test_recall_coco.sh
+```
+Our results
+```shell
++-----------------+------------------------+------------------------+
+|                 |      Box Proposals     | Segmentation Proposals |
++                 +------------------------+------------------------+
+|                 | AR_10 | AR_100 | AR_1K | AR_10 | AR_100 | AR_1K |
++-----------------+-------+--------+-------+-------+--------+-------+
+| DeepMask(paper) |  15.0 |  32.6  |  48.2 |  12.7 |  26.1  |  36.6 |
++-----------------+-------+--------+-------+-------+--------+-------+
+| DeepMask(our)   |       |        |       |       |        |       |
++-----------------+-------+--------+-------+-------+--------+-------+
 ```
 
 ## Naive Cascade Instance Segmentation (YOLOv3+DeepMask=10FPS~28FPS)
@@ -89,7 +105,10 @@ sh scripts/test_recall_coco.sh
 ```bash
 git clone https://github.com/pjreddie/darknet.git
 cd darknet
-## Compile with CUDA  https://pjreddie.com/darknet/install/
+make # Compile with CUDA https://pjreddie.com/darknet/install/
+sed -i 's/= data/= .\/darknet\/data/g' cfg/coco.data
+sed -i 's/batch=64/batch=1/g' cfg/yolov3.cfg
+sed -i 's/subdivisions=16/subdivisions=1/g' cfg/yolov3.cfg
 cd $DEEPMASK
 wget https://pjreddie.com/media/files/yolov3.weights
 wget https://pjreddie.com/media/files/yolov3-tiny.weights
@@ -121,6 +140,20 @@ author = {Wang Qiang},
 title = {{deepmask-pytorch}},
 year = {2018},
 howpublished = {\url{https://github.com/foolwood/deepmask_pytorch}}
+}
+```
+```
+@inproceedings{DeepMask,
+   title = {Learning to Segment Object Candidates},
+   author = {Pedro O. Pinheiro and Ronan Collobert and Piotr Dollár},
+   booktitle = {NIPS},
+   year = {2015}
+}
+@inproceedings{SharpMask,
+   title = {Learning to Refine Object Segments},
+   author = {Pedro O. Pinheiro and Tsung-Yi Lin and Ronan Collobert and Piotr Dollár},
+   booktitle = {ECCV},
+   year = {2016}
 }
 ```
 

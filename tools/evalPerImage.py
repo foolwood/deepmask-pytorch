@@ -58,7 +58,7 @@ def main():
     annFile = '{}/annotations/instances_{}2017.json'.format(args.datadir, args.split)
     coco = COCO(annFile)
     imgIds = coco.getImgIds()
-    imgIds = sorted(imgIds)
+    imgIds = sorted(imgIds)  # [:500] for fast test
     segm_props = []
     print('| start eval'); tic = time.time()
     for k, imgId in enumerate(imgIds):
@@ -121,6 +121,23 @@ def main():
 
     cocoDt = coco.loadRes(result_path)
 
+    print('\n\nBox Proposals Evalution\n\n')
+    annType = ['bbox']  # segm  bbox
+    cocoEval = COCOeval(coco, cocoDt)
+
+    max_dets = [10, 100, 1000]
+    useSegm = False
+    useCats = False
+
+    cocoEval.params.imgIds = imgIds
+    cocoEval.params.maxDets = max_dets
+    cocoEval.params.useSegm = useSegm
+    cocoEval.params.useCats = useCats
+    cocoEval.evaluate()
+    cocoEval.accumulate()
+    cocoEval.summarize()
+
+    print('\n\nSegmentation Proposals Evalution\n\n')
     annType = ['segm']  # segm  bbox
     cocoEval = COCOeval(coco, cocoDt)
 

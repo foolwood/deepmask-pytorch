@@ -93,7 +93,7 @@ def vos(tracker_net, mask_net, image_files, box):
             im_save = im
             plt.imshow(im_save[:, :, ::-1])
 
-            mask = (mask_in_img > 0.2).astype(np.uint8)  # threshold!
+            mask = (mask_in_img > 0.3).astype(np.uint8)  # threshold!
             _, contours, _ = cv2.findContours(mask.copy(), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_NONE)
             for contour in contours:
                 edge = patches.Polygon(contour.reshape(-1, 2), linewidth=2, edgecolor='lawngreen',
@@ -108,8 +108,8 @@ def vos(tracker_net, mask_net, image_files, box):
             plt.draw()
             plt.pause(0.01)
 
-        if f % 3 == 1:
-            plt.savefig('%05d.jpg' % f)
+        # if f % 3 == 1:
+        #     plt.savefig('%05d.jpg' % f)
 
     return toc/cv2.getTickFrequency()
 
@@ -126,9 +126,7 @@ if __name__ == "__main__":
     tracker_net.load_state_dict(torch.load('SiamRPNVOT.model'))
     tracker_net.eval().cuda()
 
-    image_files = sorted(glob.glob('/home/qwang/Desktop/a/*.jpg'))
-    # image_files = sorted(glob.glob('./tracker/bag/*.jpg'))
-    # init_rbox = [334.02, 128.36, 438.19, 188.78, 396.39, 260.83, 292.23, 200.41]
+    image_files = sorted(glob.glob('./tracker/bag/*.jpg'))
     tic = time.time()
     if VISUALIZATION:
         try:
@@ -137,14 +135,14 @@ if __name__ == "__main__":
             fig, ax = plt.subplots(1)
 
     cv2.namedWindow("SiamMask", cv2.WND_PROP_FULLSCREEN)
-    # cv2.setWindowProperty("SiamMask", cv2.WND_PROP_FULLSCREEN, cv2.WINDOW_FULLSCREEN)
+    cv2.setWindowProperty("SiamMask", cv2.WND_PROP_FULLSCREEN, cv2.WINDOW_FULLSCREEN)
     try:
         init_rect = cv2.selectROI('SiamMask', cv2.imread(image_files[0]), False, False)
         x, y, w, h = init_rect
+        if not (x | y | w | h): exit()
     except:
         exit()
 
-    # init_rect = [311, 138, 120, 120]
     toc = vos(tracker_net, mask_net, image_files, init_rect)
     print('Speed: {:.1f} FPS and {:.1f}s'.format(len(image_files)/toc, toc))
     

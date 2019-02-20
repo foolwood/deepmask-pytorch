@@ -265,16 +265,13 @@ if __name__ == "__main__":
     model = load_pretrain(model, './pretrained/deepmask/DeepMask.pth.tar')
     model = model.eval().to('cuda')
 
-    net = load_net(b"./darknet/cfg/yolov3-tiny.cfg", b"yolov3-tiny.weights", 0)
-    # net = load_net(b"./darknet/cfg/yolov3.cfg", b"yolov3.weights", 0)
+    # net = load_net(b"./darknet/cfg/yolov3-tiny.cfg", b"yolov3-tiny.weights", 0)
+    net = load_net(b"./darknet/cfg/yolov3.cfg", b"yolov3.weights", 0)
     meta = load_meta(b"./darknet/cfg/coco.data")
     image_files = glob.glob('./data/coco/val2017/*.jpg')
     tic = time.time()
     if VISUALIZATION:
-        try:
-            fig
-        except NameError:
-            fig, ax = plt.subplots(1)
+        fig, ax = plt.subplots(1)
 
     for i, image_file in enumerate(image_files):
         r = detect(net, meta, image_file.encode(), mask_model=model)
