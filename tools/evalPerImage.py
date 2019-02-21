@@ -122,7 +122,6 @@ def main():
     cocoDt = coco.loadRes(result_path)
 
     print('\n\nBox Proposals Evalution\n\n')
-    annType = ['bbox']  # segm  bbox
     cocoEval = COCOeval(coco, cocoDt)
 
     max_dets = [10, 100, 1000]
@@ -138,7 +137,6 @@ def main():
     cocoEval.summarize()
 
     print('\n\nSegmentation Proposals Evalution\n\n')
-    annType = ['segm']  # segm  bbox
     cocoEval = COCOeval(coco, cocoDt)
 
     max_dets = [10, 100, 1000]
